@@ -1,7 +1,7 @@
 #include "contiki.h"
 #include "contiki-net.h"
 #include "coap-engine.h"
-#include "temperature_prediction.h"
+#include "machine_learning/temperature_prediction.h"
 #include "global_variables.h"
 #include <stdio.h>
 #include <string.h>

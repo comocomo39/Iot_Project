@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "machine_learning/temperature_prediction.h"
 #include "../global_variable/global_variables.h"
 
 #define SAMPLE_COUNT 10
