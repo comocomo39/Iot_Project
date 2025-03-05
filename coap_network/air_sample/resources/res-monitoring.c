@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../global_variable/global_variables.h"
-#include "model/functionsML.h"
+#include "machine_learning/functionsML.h"
 
 #define SAMPLE_COUNT 10
 #define TIME_SAMPLE 10  // Campionamento ogni 10 secondi

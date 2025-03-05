@@ -37,9 +37,7 @@ void write_sample() {
     air_sample.co = random_rand() % 100;         // Simulazione MQ7_CO
     air_sample.air_quality = random_rand() % 100; // Simulazione MQ135_AirQuality
     air_sample.tvoc = random_rand() % 500;      // Simulazione TVOC
-
-    printf("🟢 Dati raccolti: CO=%d, AirQuality=%d, TVOC=%d\n",
-           air_sample.co, air_sample.air_quality, air_sample.tvoc);
+ 
 }
 
 // Funzione di gestione della risposta dal server di registrazione

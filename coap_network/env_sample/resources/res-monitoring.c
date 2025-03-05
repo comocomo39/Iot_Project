@@ -13,8 +13,9 @@
 
 static int count = 0;
 extern Sample samples[SAMPLE_COUNT]; // Array per memorizzare i campioni
-
-static struct etimer monitoring_timer; // Timer per il campionamento
+static float new_temperature;
+static float new_humidity;
+static float new_dust_density;
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
                             uint16_t preferred_size, int32_t *offset);
@@ -28,28 +29,19 @@ EVENT_RESOURCE(res_monitoring_temp,
          NULL,
          res_event_handler);
 
-// Funzione per raccogliere nuovi campioni
-static void update_samples() {
-    if (count >= SAMPLE_COUNT) {
-        count = 0; // Resetta il buffer se pieno
-    }
 
-    // Genera nuovi dati casuali per test (sostituire con lettura da sensori reali)
-    samples[count].temperature = (random_rand() % 30) + 15;
-    samples[count].humidity = (random_rand() % 100);
-    samples[count].dust_density = (random_rand() % 500);
-
-    printf("🟢 Nuovo campione [%d]: Temp=%.2f°C, Hum=%.2f%%, Dust=%d\n",
-           count, samples[count].temperature, samples[count].humidity, samples[count].dust_density);
-
-    count++;
-}
 
 // Handler per la richiesta GET
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
                             uint16_t preferred_size, int32_t *offset) {
-    update_samples();
+    
+    if (count >= SAMPLE_COUNT) {
+            count = 0; // Resetta il buffer se pieno
+        }
 
+    new_temperature = samples[count].temperature;
+    new_humidity = samples[count].humidity;
+    new_dust_density = samples[count].dust_density;
     // Crea un JSON con gli ultimi dati raccolti
     cJSON *root = cJSON_CreateObject();
     cJSON *data = cJSON_CreateArray();
@@ -61,6 +53,8 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     char *json = cJSON_Print(root);
     int length = snprintf((char *)buffer, preferred_size, "%s", json);
     coap_set_payload(response, (uint8_t *)buffer, length);
+
+    count++;
 }
 
 // Notifica gli osservatori ogni 10 secondi
@@ -68,21 +62,3 @@ static void res_event_handler(void) {
     coap_notify_observers(&res_monitoring_temp);
 }
 
-// Processo per il monitoraggio ambientale
-PROCESS(monitoring_process, "Environmental Monitoring Process");
-AUTOSTART_PROCESSES(&monitoring_process);
-
-PROCESS_THREAD(monitoring_process, ev, data) {
-    PROCESS_BEGIN();
-    
-    etimer_set(&monitoring_timer, CLOCK_SECOND * TIME_SAMPLE);
-    while (1) {
-        PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&monitoring_timer));
-
-        update_samples();
-        res_event_handler();
-        etimer_reset(&monitoring_timer);
-    }
-
-    PROCESS_END();
-}

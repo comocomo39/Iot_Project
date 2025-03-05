@@ -17,6 +17,7 @@ static float temperatures[10];
 static float humidities[10];
 static float dust_densities[10];
 static int index = 0;
+static float input[30];
 
 // Funzione per normalizzare i valori
 float normalize(float value, float min, float max) {

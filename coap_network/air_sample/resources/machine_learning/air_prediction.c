@@ -1,5 +1,5 @@
 #include "contiki.h"
-#include "air_model.h"
+#include "air_prediction.h"
 #include "eml_trees.h"
 #include <stdio.h>
 

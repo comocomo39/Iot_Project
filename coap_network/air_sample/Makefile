@@ -2,7 +2,7 @@ CONTIKI_PROJECT = air_sample
 
 # coap-example-observe-client is outdated but will be ported at a later point
 all: $(CONTIKI_PROJECT)
-MODULES_REL+=./resources/model
+MODULES_REL+=./resources/machine_learning
 MODULES_REL+=./resources
 MODULES_REL+=./global_variable
 

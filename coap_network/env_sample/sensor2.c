@@ -46,8 +46,6 @@ void write_samples() {
         samples[sample_count].humidity = random_rand() % 100;          // Umidità tra 0-100%
         samples[sample_count].dust_density = random_rand() % 500;      // Densità di polvere tra 0-500
 
-        printf("🟢 Campione %d: Temp=%.2f°C, Hum=%.2f%%, Dust=%d\n",
-               sample_count, samples[sample_count].temperature, samples[sample_count].humidity, samples[sample_count].dust_density);
         sample_count++;
     } else {
         // Se l'array è pieno, shiftare i valori (FIFO)
