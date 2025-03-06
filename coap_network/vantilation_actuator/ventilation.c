@@ -8,7 +8,7 @@
 #include "sys/etimer.h"
 #include "os/dev/leds.h"
 #include "../cJSON-master/cJSON.h"
-#include "global_variables.h"
+#include "global_variable/global_variables.h"
 
 #define GOOD_ACK 65
 #define SERVER_EP "coap://[fd00::1]:5683"
@@ -21,6 +21,9 @@ static int registration_retry_count = 0;
 static int shutdown_flag = 0;
 int high_temp_count = 0;
 int low_temp_count = 0;
+float temp_tresh=25;  // Soglia della temperatura per attivare la ventilazione
+int nRisktemp=0;     // Numero di volte in cui la temperatura è stata sopra la soglia
+int shutdown=0;  
 
 extern coap_resource_t res_tresh;
 extern coap_resource_t res_shutdown;
@@ -79,6 +82,40 @@ void response_handler_temp(coap_message_t *response) {
     printf("📡 Temperatura Predetta: %.2f°C\n", predicted_temperature);
     control_ventilation(predicted_temperature, temp_tresh);
 }
+
+void registration_handler(coap_message_t* response) {
+    const uint8_t *chunk;
+    if (response == NULL) {
+        printf("❌ Nessuna risposta dal server di registrazione.\n");
+        return;
+    }
+    
+    int len = coap_get_payload(response, &chunk);
+    char payload[len + 1];
+    strncpy(payload, (char *)chunk, len);
+    payload[len] = '\0';
+
+    printf("📡 Risposta dal server di registrazione: %s\n", payload);
+
+    if (response->code == GOOD_ACK) {
+        registered = 1;
+        printf("✅ Registrazione completata con successo.\n");
+    } else {
+        printf("❌ Registrazione fallita.\n");
+    }
+}
+
+void handle_notification_temp(struct coap_observee_s *observee, void *notification, coap_notification_flag_t flag) {
+    coap_message_t *msg = (coap_message_t *)notification;
+
+    if (msg) {
+        printf("📡 Notifica ricevuta dalla predizione della temperatura.\n");
+        response_handler_temp(msg);
+    } else {
+        printf("⚠️ Nessuna notifica ricevuta.\n");
+    }
+}
+
 
 PROCESS_THREAD(coap_client_process, ev, data) {
     PROCESS_BEGIN();
