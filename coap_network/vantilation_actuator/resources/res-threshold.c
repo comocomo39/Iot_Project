@@ -15,6 +15,8 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 // Variabili globali
 extern float temp_tresh;  // Soglia della temperatura
 extern int nRisktemp;
+extern int high_temp_count;
+extern int low_temp_count;
 
 RESOURCE(res_tresh,
          "title=\"Set Temperature Threshold\";rt=\"Text\"",
@@ -31,6 +33,8 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     cJSON *json = cJSON_CreateObject();
     cJSON_AddNumberToObject(json, "temperature_threshold", temp_tresh);
     cJSON_AddNumberToObject(json, "risk_temperature", nRisktemp);
+    cJSON_AddNumberToObject(json, "high_temp_count", high_temp_count);
+    cJSON_AddNumberToObject(json, "low_temp_count", low_temp_count);
 
     // Conversione in stringa JSON
     char *json_str = cJSON_Print(json);
@@ -46,12 +50,16 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     coap_set_header_content_format(response, APPLICATION_JSON);
     coap_set_header_etag(response, (uint8_t *)&length, 1);
     coap_set_payload(response, buffer, length);
+    
+    cJSON_Delete(json);
 }
 
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
                              uint16_t preferred_size, int32_t *offset) {
     printf("📡 POST ricevuta - aggiornamento soglia\n");
     nRisktemp = 0;
+    high_temp_count = 0;
+    low_temp_count = 0;
     
     const uint8_t *payload = NULL;
     int payload_len = coap_get_payload(request, &payload);
@@ -75,4 +83,6 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
         int length = snprintf((char *)buffer, preferred_size, "Threshold set to: %.2f", temp_tresh);
         coap_set_header_content_format(response, TEXT_PLAIN);
         coap_set_header_etag(response, (uint8_t *)&length, 1);
-        coap_set_payload(response, (
+        coap_set_payload(response, buffer, length);
+    }
+}

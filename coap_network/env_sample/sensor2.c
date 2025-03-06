@@ -16,7 +16,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 
 #define SERVER_EP "coap://[fd00::1]:5683"
-#define TIME_SAMPLE 10  // Campionamento ogni 10 secondi
+#define TIME_SAMPLE 2
 #define MAX_REGISTRATION_RETRY 3
 #define GOOD_ACK 65
 #define MAX_SAMPLES 10  // Manteniamo gli ultimi 10 campioni per la serie temporale

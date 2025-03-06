@@ -23,7 +23,7 @@ static void res_shutdown_get_handler(coap_message_t *request, coap_message_t *re
 { 
     air_sample.co=-1; // Increment the shutdown variable
 
-    printf("Shutdown incremented RES SHUTDOWN LPGSENSOR \n");
+    printf("Shutdown incremented RES SHUTDOWN AIRSENSOR \n");
 
    
 }
