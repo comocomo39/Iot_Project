@@ -1,41 +1,49 @@
 #include "contiki.h"
 #include "contiki-net.h"
 #include "coap-engine.h"
-#include "../../cJSON-master/cJSON.h"
-#include "../global_variable/global_variables.h"
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include "../global_variable/global_variables.h"
 
-extern int danger_threshold;  
+/* Handler function for the GET and POST requests */
+static void res_get_handler(coap_message_t *request, coap_message_t *response,
+                            uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void res_post_handler(coap_message_t *request, coap_message_t *response,
+                             uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
-static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
-                            uint16_t preferred_size, int32_t *offset);
-static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
-                             uint16_t preferred_size, int32_t *offset);
+extern int danger_threshold;
 
-RESOURCE(res_tresh,
-         "title=\"Set Danger Threshold\";rt=\"Text\"",
+/* Resource definition */
+RESOURCE(res_threshold,
+         "title=\"Danger Threshold\";rt=\"threshold\"",
          res_get_handler,
-         res_post_handler,
          NULL,
+         res_post_handler,
          NULL);
 
-static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
-                            uint16_t preferred_size, int32_t *offset) {
-    char json_str[50];
-    snprintf(json_str, sizeof(json_str), "{ \"danger_threshold\": %d }", danger_threshold);
-    int length = strlen(json_str);
-    memcpy(buffer, json_str, length);
+static void res_get_handler(coap_message_t *request, coap_message_t *response,
+                            uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
+    printf("📡 Sending current danger threshold: %d\n", danger_threshold);
+    int length = snprintf((char *)buffer, preferred_size, "{ \"danger_threshold\": %d }", danger_threshold);
+    coap_set_header_content_format(response, APPLICATION_JSON);
     coap_set_payload(response, buffer, length);
 }
 
-static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
-                             uint16_t preferred_size, int32_t *offset) {
-    const uint8_t *payload = NULL;
+static void res_post_handler(coap_message_t *request, coap_message_t *response,
+                             uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
+    const uint8_t *payload;
     int payload_len = coap_get_payload(request, &payload);
-    if (payload_len) {
-        danger_threshold = atoi((char *)payload);
-        printf("🔴 Soglia di pericolo aggiornata a: %d\n", danger_threshold);
+    if (payload_len > 0) {
+        char temp_buffer[payload_len + 1];
+        memcpy(temp_buffer, payload, payload_len);
+        temp_buffer[payload_len] = '\0';
+        
+        int new_threshold = atoi(temp_buffer);
+        if (new_threshold > 0) {
+            danger_threshold = new_threshold;
+            printf("🔴 Updated danger threshold to: %d\n", danger_threshold);
+        } else {
+            printf("❌ Invalid threshold value received!\n");
+        }
     }
 }
