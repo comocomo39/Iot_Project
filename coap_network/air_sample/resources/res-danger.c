@@ -3,9 +3,9 @@
 #include "coap-engine.h"
 #include <stdio.h>
 #include "../global_variable/global_variables.h"
-#include "model/functionsML.h"
+#include "machine_learning/functionsML.h"
 
-extern AirSample air_samples[10]; // Array di campioni della qualità dell'aria
+extern AirSample air_sample; // Array di campioni della qualità dell'aria
 
 static int prediction = 0;
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
@@ -26,9 +26,9 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 
     // Prendiamo gli ultimi dati disponibili
     float features[3] = {
-        air_samples[9].co,
-        air_samples[9].air_quality,
-        air_samples[9].tvoc
+        air_sample.co,
+        air_sample.air_quality,
+        air_sample.tvoc
     };
 
     // Chiamiamo il modello ML per classificare il pericolo

@@ -8,7 +8,7 @@
 /* Handler function for the GET request */
 static void res_shutdown_get_handler(coap_message_t *request, coap_message_t *response,
                                      uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
-extern Sample sample;
+extern AirSample air_sample;
 
 /* Resource definition */
 RESOURCE(res_shutdown,
@@ -21,7 +21,7 @@ static void res_shutdown_get_handler(coap_message_t *request, coap_message_t *re
                                      uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 
 { 
-    sample.co=-1; // Increment the shutdown variable
+    air_sample.co=-1; // Increment the shutdown variable
 
     printf("Shutdown incremented RES SHUTDOWN LPGSENSOR \n");
 

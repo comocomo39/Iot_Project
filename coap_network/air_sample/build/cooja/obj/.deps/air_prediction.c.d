@@ -14,7 +14,8 @@ build/cooja/obj/air_prediction.o: \
  ../../../../arch/platform/cooja/./rtimer-arch.h \
  ../../../../arch/platform/cooja/./lib/simEnvChange.h \
  ../../../../arch/platform/cooja/./sys/cooja_mt.h ../../../../os/sys/pt.h \
- ../../../../os/sys/clock.h resources/machine_learning/air_prediction.h \
+ ../../../../os/sys/clock.h \
+ resources/machine_learning/danger_air_classification.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_trees.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h
@@ -42,7 +43,7 @@ project-conf.h:
 ../../../../arch/platform/cooja/./sys/cooja_mt.h:
 ../../../../os/sys/pt.h:
 ../../../../os/sys/clock.h:
-resources/machine_learning/air_prediction.h:
+resources/machine_learning/danger_air_classification.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_trees.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h:

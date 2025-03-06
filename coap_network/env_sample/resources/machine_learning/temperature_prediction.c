@@ -39,7 +39,7 @@ void update_sensor_values(float new_temperature, float new_humidity, float new_d
 
 // Funzione per predire la temperatura futura
 float predict_next_temperature_from_values(float temp[], float hum[], float dust[]) {
-    float input[30];
+
     for (int i = 0; i < 10; i++) {
         input[i] = temp[i];
         input[10 + i] = hum[i];
