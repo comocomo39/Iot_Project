@@ -83,9 +83,9 @@ class CoapResourceRegistrationActuator extends CoapResource {
                         int index = ip.ip.lastIndexOf("0:") + 2;
                         String ipAddress1 = ip.ip.substring(index);
                         System.out.println("actuator: " + ip.name + " ip: " + ipAddress1);
-                        if (ip.name.toLowerCase().equals("lpgsensor")) {
+                        if (ip.name.toLowerCase().equals("air_sample")) {
                             responseJson.put("l", ipAddress1);
-                        } else if (ip.name.toLowerCase().equals("thermometer")) {
+                        } else if (ip.name.toLowerCase().equals("env_sample")) {
                             responseJson.put("t", ipAddress1);
                         } else {
                             responseJson.put("e", ipAddress1);
@@ -100,9 +100,9 @@ class CoapResourceRegistrationActuator extends CoapResource {
                     exchange.respond(response);
                     for (PairNameIp ip : sensorIPs) {
                         System.out.println("actuator: " + ip.name + " ip: " + ip.ip);
-                        if (ip.name.toLowerCase().equals("lpgsensor")) {
+                        if (ip.name.toLowerCase().equals("air_sample")) {
                             responseJson.put("l", ip.ip);
-                        } else if (ip.name.toLowerCase().equals("thermometer")) {
+                        } else if (ip.name.toLowerCase().equals("env_sample")) {
 
                             responseJson.put("t", ip.ip);
 

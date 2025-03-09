@@ -40,18 +40,18 @@ public class CoapObserver implements Runnable {
                 JSONObject json= null;
                 try{
                    JSONParser parser = new JSONParser();
-                   if(name.equals("thermometer")){
+                   if(name.equals("env_sample")){
                     json = (JSONObject) parser.parse(content);
                     Long timeid=(Long) json.get("id");
                     JSONArray ssArray =(JSONArray) json.get("ss");
-                    dbManger.insertSensorTHERMOMETER("thermometer", ipv6, ssArray);
+                    dbManger.insertSensorENV("env_sample", ipv6, ssArray);
                    }
-                   else if(name.equals("lpgSensor")) {
+                   else if(name.equals("air_sample")) {
                     json = (JSONObject) parser.parse(content);
                     if (json.containsKey("ss")) {
                         Long timeid = (Long) json.get("id");
                         JSONArray ssArray = (JSONArray) json.get("ss");
-                        dbManger.insertSensorLPG("lpgSensor", ipv6,ssArray, timeid);
+                        dbManger.insertSensorAIR("air_sample", ipv6,ssArray, timeid);
                     } else {
                         System.out.println("Il JSON non contiene 'ss'");
                     }

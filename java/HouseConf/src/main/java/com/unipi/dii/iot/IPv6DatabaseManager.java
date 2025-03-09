@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.json.simple.JSONArray;
 
+import com.unipi.dii.iot.IPv6DatabaseManager.PairNameIp;
+
 public class IPv6DatabaseManager {
     static final String JDBC_URL = "jdbc:mysql://localhost:3306/iotdatabase";
     static final String JDBC_USER = "root";
@@ -160,17 +162,18 @@ public class PairNameIp {
         }
     }
 
-    public void insertSensorTHERMOMETER(String sensorName, String ip, JSONArray ss) {
+    public void insertSensorENV(String sensorName, String ip, JSONArray ss) {
         //checking if table exists, if not we create it
         JSONArray valuesArray = new JSONArray();
         valuesArray.add("temperature");
         valuesArray.add("humidity");
+        valuesArray.add("dust_density");
         sensorName = sensorName.toLowerCase();
         createTableSensor(sensorName, ip, valuesArray);
 
         ip = ip.replace(":", "");
         String tableName = sensorName + "_" + ip;
-        String insertSQL = "INSERT INTO " + tableName + " (sensorName, temperature, humidity) VALUES (?, ?, ?)";
+        String insertSQL = "INSERT INTO " + tableName + " (sensorName, temperature, humidity, dust_density) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
@@ -186,49 +189,49 @@ public class PairNameIp {
         }
     }
 
-    public void insertSensorLPG(String sensorName, String ip, JSONArray ss,Long value) {
-        //checking if table exists, if not we create it
-        JSONArray valuesArray = new JSONArray();
-        valuesArray.add("co");
-        valuesArray.add("light");
-        valuesArray.add("smoke");
-        valuesArray.add("pr");
-        String sensorNameTable = sensorName.toLowerCase();
-        createTableSensor(sensorNameTable, ip, valuesArray);
+    public void insertSensorAIR(String sensorName, String ip, JSONArray ss) {
+    // Checking if table exists, if not, we create it
+    JSONArray valuesArray = new JSONArray();
+    valuesArray.add("co");
+    valuesArray.add("air_quality");
+    valuesArray.add("tvoc");
 
-        ip = ip.replace(":", "");
-        String tableName = sensorNameTable + "_" + ip;
-        String insertSQL = "INSERT INTO " + tableName + " (sensorName, co, smoke, light, pr) VALUES (?, ?, ?, ?, ?)";
+    String sensorNameTable = sensorName.toLowerCase();
+    createTableSensor(sensorNameTable, ip, valuesArray);
 
-        //converting the boolean value to Long
-        Long light = 0L;
-        if(!ss.get(2).toString().equals("0L")){
-            light=1L;
+    // Formatting table name
+    ip = ip.replace(":", "");
+    String tableName = sensorNameTable + "_" + ip;
+    String insertSQL = "INSERT INTO " + tableName + " (sensorName, co, air_quality, tvoc, prediction) VALUES (?, ?, ?, ?, ?)";
+
+    try (Connection conn = connect();
+         PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+
+        pstmt.setString(1, sensorName);
+
+        // Ensure JSONArray has at least 3 values
+        if (ss.size() >= 3) {
+            pstmt.setInt(2, ((Long) ss.get(0)).intValue());
+            pstmt.setInt(3, ((Long) ss.get(1)).intValue());
+            pstmt.setInt(4, ((Long) ss.get(2)).intValue());
+        } else {
+            throw new IllegalArgumentException("JSONArray 'ss' must contain at least 3 elements.");
         }
 
-        try (Connection conn = connect();
-            PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
-            pstmt.setString(1, sensorName);
+        // Generate prediction value
+        int predictionValue = (int) (Math.random() * 3) + 1;
+        System.out.println("PREDICTION: " + predictionValue);
+        pstmt.setInt(5, predictionValue);
 
-            Long longValue = (Long) ss.get(0);
-            pstmt.setInt(2, longValue.intValue());
-
-            longValue = (Long) ss.get(1);
-            pstmt.setInt(3, longValue.intValue());
-
-            pstmt.setLong(4,  light);
-
-            longValue = (long) (Math.random() * 3) + 1;
-            System.out.println("PREDICTION: " + longValue);
-            pstmt.setInt(5, longValue.intValue());           
-            pstmt.executeUpdate();
-            System.out.println("Sensor inserted successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        pstmt.executeUpdate();
+        System.out.println("Sensor inserted successfully.");
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
-    public void insertActuatorSPRINKLER(String name, String ip, float threshold, String state) {
+
+    public void insertActuatorVENTILATION(String name, String ip, float threshold, String state) {
 
         String tableName = name + "_" + ip.replace(":", "");
         String insertSQL = "INSERT INTO " + tableName + " (sensorName, ipAddress, threshold, state, timestamp) VALUES (?, ?, ?, ?, ?)";
@@ -248,7 +251,7 @@ public class PairNameIp {
     }
 
 
-    public void insertActuatorFAN(String name, String ip, float threshold, String state) {
+    public void insertActuatorAIRSYSTEM(String name, String ip, float threshold, String state) {
 
         String tableName = name + "_" + ip.replace(":", "");
         String insertSQL = "INSERT INTO " + tableName + " (sensorName, ipAddress, threshold, state, timestamp) VALUES (?, ?, ?, ?, ?)";

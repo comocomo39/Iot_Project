@@ -40,14 +40,14 @@ public class RemoteControlApp {
             switch (choice) {
                 case 1:
                     // set the temperature threshold for the actuators
-                    System.out.print("Set the threshold for the sprinkler: ");
+                    System.out.print("Set the threshold for the ventilation: ");
                     int Sprinklerthr = scanner.nextInt();
 
                     System.out.print("Set the threshold for the air system: ");
                     int AirSistemthr = scanner.nextInt();
 
 
-                    String ipv6 =db.setActuatorTemperatureThreshold("sprinkler");
+                    String ipv6 =db.setActuatorTemperatureThreshold("ventilation");
                     String ipv6AirSystem =db.setActuatorTemperatureThreshold("actuator");
 
                     if(ipv6 == null || ipv6AirSystem == null)
@@ -67,9 +67,9 @@ public class RemoteControlApp {
                     CoapResponse response2 = client2.post(payload2, MediaTypeRegistry.TEXT_PLAIN);
 
                     if (response != null) {
-                        System.out.println("Response sprinkler: " + response.getResponseText());
+                        System.out.println("Response env_sample: " + response.getResponseText());
                     } else {
-                        System.out.println("No response from sprinkler.");
+                        System.out.println("No response from ventilation.");
                     }
                     if (response2 != null) {
                         System.out.println("Response air system: " + response2.getResponseText());
@@ -88,11 +88,11 @@ public class RemoteControlApp {
                         System.out.print("insert the node to check: ");
                         nodeName0 = scanner.nextLine();
                         //checking of the device is a valid one
-                        if (nodeName0.equals("actuator") || nodeName0.equals("sprinkler")) {
+                        if (nodeName0.equals("actuator") || nodeName0.equals("ventilation")) {
                             checkDevice0 = true;
                             filter="actuator";
 
-                        }else if(nodeName0.equals("lpgsensor") || nodeName0.equals("thermometer"))
+                        }else if(nodeName0.equals("air_sample") || nodeName0.equals("env_sample"))
                         {
                             checkDevice0 = true;
                             filter="sensor";
@@ -154,7 +154,7 @@ public class RemoteControlApp {
                         System.out.print("Enter the name of the node to turn off: ");
                         nodeName = scanner.nextLine();
                         //checking of the device is a valid one
-                        if (nodeName.equals("actuator") || nodeName.equals("sprinkler") || nodeName.equals("lpgsensor") || nodeName.equals("thermometer")) {
+                        if (nodeName.equals("actuator") || nodeName.equals("ventilation") || nodeName.equals("air_sample") || nodeName.equals("env_sample")) {
                             checkDevice = true;
                         }
                         else{
@@ -187,7 +187,7 @@ public class RemoteControlApp {
                     } else {
                         System.out.println("Server is down or not responding");
                     }
-                    }else if(nodeName.equals("lpgsensor") || nodeName.equals("thermometer"))
+                    }else if(nodeName.equals("air_sample") || nodeName.equals("env_sample"))
                     {
                         List<PairNameIp> ipsToContact = db.getIPs(filterDb);
                         String ipcont = null;
