@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.unipi.dii.iot</groupId>
-  <artifactId>factorycare</artifactId>
+  <artifactId>houseconf</artifactId>
   <version>1.0-SNAPSHOT</version>
 
-  <name>factorycare</name>
+  <name>houseconf</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -56,7 +56,7 @@
           <!-- Specifica la classe principale -->
           <archive>
             <manifest>
-              <mainClass>com.unipi.dii.iot.main.java</mainClass>
+              <mainClass>com.unipi.dii.iot.Main</mainClass>
             </manifest>
           </archive>
         </configuration>

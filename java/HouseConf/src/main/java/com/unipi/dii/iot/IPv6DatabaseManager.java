@@ -15,19 +15,14 @@ import org.json.simple.JSONArray;
 import com.unipi.dii.iot.IPv6DatabaseManager.PairNameIp;
 
 public class IPv6DatabaseManager {
-    static final String JDBC_URL = "jdbc:mysql://localhost:3306/iotdatabase";
+    static final String JDBC_URL = "jdbc:mysql://localhost:3306/";
+    static String DB_NAME = "iotdatabase";
     static final String JDBC_USER = "root";
-    static final String JDBC_PASSWORD = "PASSWORD";
+    static final String JDBC_PASSWORD = "";
 
     public static void createDatabase() {
-        String JDBC_URL1 = "jdbc:mysql://localhost:3306/";
-        String JDBC_USER1 = "root";
-        String JDBC_PASSWORD1 = "PASSWORD";
-        String DATABASE_NAME1 = "iotdatabase";
-    
-        String createDatabaseSQL = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME1;
-    
-        try (Connection conn = DriverManager.getConnection(JDBC_URL1, JDBC_USER1, JDBC_PASSWORD1);
+        String createDatabaseSQL = "CREATE DATABASE IF NOT EXISTS " + DB_NAME;
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              Statement stmt = conn.createStatement()) {
             stmt.execute(createDatabaseSQL);
             System.out.println("Database created successfully.");
@@ -37,8 +32,9 @@ public class IPv6DatabaseManager {
         }
     }
     
+    
     static Connection connect() throws SQLException {
-        return DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        return DriverManager.getConnection(JDBC_URL + DB_NAME, JDBC_USER, JDBC_PASSWORD);
     }
 
     public static void createTableIPV6() {
@@ -126,8 +122,7 @@ public class PairNameIp {
     }
 
     public static void deleteDB() {
-        String deleteDBSQL = "DROP DATABASE IF EXISTS iotdatabase";
-
+        String deleteDBSQL = "DROP DATABASE IF EXISTS " + DB_NAME;
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              Statement stmt = conn.createStatement()) {
             stmt.execute(deleteDBSQL);
@@ -136,6 +131,7 @@ public class PairNameIp {
             e.printStackTrace();
         }
     }
+    
     public static void createTableSensor(String sensorName, String ip, JSONArray ss) {
         ip = ip.replace(":", "");
 
@@ -189,7 +185,7 @@ public class PairNameIp {
         }
     }
 
-    public void insertSensorAIR(String sensorName, String ip, JSONArray ss) {
+    public void insertSensorAIR(String sensorName, String ip, JSONArray ss, Long prediction) {
     // Checking if table exists, if not, we create it
     JSONArray valuesArray = new JSONArray();
     valuesArray.add("co");
@@ -219,7 +215,7 @@ public class PairNameIp {
         }
 
         // Generate prediction value
-        int predictionValue = (int) (Math.random() * 3) + 1;
+        int predictionValue = prediction.intValue();
         System.out.println("PREDICTION: " + predictionValue);
         pstmt.setInt(5, predictionValue);
 

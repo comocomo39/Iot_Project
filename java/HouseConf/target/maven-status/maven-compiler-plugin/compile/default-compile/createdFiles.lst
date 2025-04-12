@@ -1,0 +1,8 @@
+com/unipi/dii/iot/Main.class
+com/unipi/dii/iot/IPv6DatabaseManager$PairNameIp.class
+com/unipi/dii/iot/CoapObserver.class
+com/unipi/dii/iot/CoapObserver$1.class
+com/unipi/dii/iot/MyServer.class
+com/unipi/dii/iot/IPv6DatabaseManager.class
+com/unipi/dii/iot/CoapResourceRegistrationActuator.class
+com/unipi/dii/iot/CoapResourceRegistrationSensor.class

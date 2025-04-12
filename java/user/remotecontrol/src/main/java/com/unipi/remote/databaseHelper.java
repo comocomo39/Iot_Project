@@ -12,7 +12,7 @@ import java.util.List;
 public class databaseHelper {
     static private final String url = "jdbc:mysql://localhost:3306/iotdatabase";
     static private final String user = "root";
-    static private final String password = "PASSWORD";
+    static private final String password = "";
 
     public static Connection getConnection() {
         Connection connection = null;
