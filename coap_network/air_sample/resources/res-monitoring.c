@@ -34,8 +34,6 @@ EVENT_RESOURCE(res_monitoring_air,
 /* Handler GET (usa ultimo JSON salvato) */
 static void res_get_handler(coap_message_t *request, coap_message_t *response,
                              uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
-  printf("GET MONITORING\n");
-
   coap_set_header_content_format(response, APPLICATION_JSON);
   coap_set_payload(response, last_payload, strlen(last_payload));
 }

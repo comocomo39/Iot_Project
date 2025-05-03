@@ -13,8 +13,8 @@ extern Sample env_samples[10]; // Array per memorizzare gli ultimi 10 campioni a
 
 /* ---- Normalizzazione temperature / humidity / dust / gas ---- */
 /* ---- range validi sensore ---- */
-#define TEMP_MIN   5.0f
-#define TEMP_MAX   35.0f
+#define TEMP_MIN   17.0f
+#define TEMP_MAX   32.0f
 #define HUM_MIN    30.0f
 #define HUM_MAX    95.0f
 #define DUST_MIN    0.0f

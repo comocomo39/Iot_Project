@@ -25,7 +25,7 @@
 #define REGISTRATION_DELAY 10 // in seconds
 
 static char* service_url_reg = "/registrationActuator";
-static char* service_url_danger = "/danger";
+static char* service_url_danger = "danger";
 static int registration_attempts = 0;
 static int registered = 0;
 
@@ -42,14 +42,22 @@ PROCESS(coap_client_process, "CoAP Client Process");
 AUTOSTART_PROCESSES(&coap_client_process);
 
 void response_handler_danger(coap_message_t *response) {
-  if (response == NULL) {
-    printf("No response received from danger sensor.\n");
-    return;
+  if(response == NULL) return;
+
+  const uint8_t *chunk; int len = coap_get_payload(response, &chunk);
+  char buf[len+1]; memcpy(buf, chunk, len); buf[len]='\0';
+
+  int danger = atoi(buf);   // 0-1-2
+  printf("💨  Livello di pericolo: %d\n", danger);
+
+  /* esempio di reazione: */
+  switch(danger) {
+    case 0: leds_off(LEDS_RED | LEDS_YELLOW); leds_on(LEDS_GREEN);  break;
+    case 1: leds_off(LEDS_RED);               leds_on(LEDS_YELLOW); break;
+    case 2: leds_off(LEDS_GREEN | LEDS_YELLOW); leds_on(LEDS_RED);  break;
   }
-  const uint8_t *chunk;
-  int len = coap_get_payload(response, &chunk);
-  printf("|%.*s|\n", len, (char *)chunk);
 }
+
 
 void handle_notification_danger(struct coap_observee_s *observee, void *notification, coap_notification_flag_t flag) {
   coap_message_t *msg = (coap_message_t *)notification;

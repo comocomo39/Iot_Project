@@ -6,14 +6,12 @@
 #include <stdio.h>
 
 // Definizione dei range di normalizzazione
-#define TEMP_MIN   5.0f
-#define TEMP_MAX   35.0f
+#define TEMP_MIN   17.0f
+#define TEMP_MAX   32.0f
 #define HUM_MIN    30.0f
 #define HUM_MAX    95.0f
 #define DUST_MIN    0.0f
 #define DUST_MAX  500.0f
-
-
 
 static float temperatures[10];
 static float humidities[10];
@@ -41,13 +39,18 @@ void update_sensor_values(float new_temperature, float new_humidity, float new_d
 
 // Funzione per predire la temperatura futura
 float predict_next_temperature_from_values(float temp[], float hum[], float dust[]) {
-
+    // input_dim = 10 campioni per ciascuna feature
     for (int i = 0; i < 10; i++) {
-        input[i] = temp[i];
-        input[10 + i] = hum[i];
-        input[20 + i] = dust[i];
+        input[i]      = temp[i];   // °C
+        input[10 + i] = hum[i];    // %HR
+        input[20 + i] = dust[i];   // µg/m³
     }
+    // eml_trees_regress1 restituisce già °C
+    // for (int i = 0; i < 30; i++) {
+    // printf("in[%2d]=%.2f  ", i, input[i]);
+    // if ((i+1)%10==0) printf("\n");
+    // }
 
-    float predicted_temperature = eml_trees_regress1(&temperature_prediction_model, input, 30);
-    return predicted_temperature;
+    return eml_trees_regress1(&temperature_prediction_model, input, 30);
 }
+

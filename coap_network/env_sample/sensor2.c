@@ -40,24 +40,52 @@ static struct etimer prediction_timer;
 static struct etimer monitoring_timer;
 
 // Funzione per raccogliere un nuovo campione di dati
-void write_samples() {
-    
+#define T_MIN   28
+#define T_MAX   35
+#define H_MIN   30
+#define H_MAX   80
+#define D_MIN    0
+#define D_MAX   100
 
+// stato “persistente” tra una chiamata e l’altra
+static int last_temp = 30;
+static int last_hum  = 45;
+static int last_dust = 20;
+
+void write_samples() {
+    // piccolo passo casuale in [-1, +1]
+    int dt = (random_rand() % 3) - 1;
+    int dh = (random_rand() % 3) - 1;
+    int dd = (random_rand() % 3) - 1;
+
+    // aggiorno con clamp sul min/max
+    last_temp = last_temp + dt;
+    if (last_temp < T_MIN) last_temp = T_MIN;
+    if (last_temp > T_MAX) last_temp = T_MAX;
+
+    last_hum = last_hum + dh;
+    if (last_hum < H_MIN) last_hum = H_MIN;
+    if (last_hum > H_MAX) last_hum = H_MAX;
+
+    last_dust = last_dust + dd;
+    if (last_dust < D_MIN) last_dust = D_MIN;
+    if (last_dust > D_MAX) last_dust = D_MAX;
+
+    // inserisco nel buffer (stesso FIFO di prima)
     if (sample_count < MAX_SAMPLES) {
-        samples[sample_count].timeid = id_counter++;
-        samples[sample_count].temperature = (random_rand() % 20) + 15;
-        samples[sample_count].humidity = random_rand() % 100;
-        samples[sample_count].dust_density = random_rand() % 500;
+        samples[sample_count].timeid      = id_counter++;
+        samples[sample_count].temperature = last_temp;
+        samples[sample_count].humidity    = last_hum;
+        samples[sample_count].dust_density= last_dust;
         sample_count++;
     } else {
-        // FIFO: shift i campioni
         for (int i = 0; i < MAX_SAMPLES - 1; i++) {
             samples[i] = samples[i + 1];
         }
-        samples[MAX_SAMPLES - 1].timeid = id_counter++;
-        samples[MAX_SAMPLES - 1].temperature = (random_rand() % 30) + 15;
-        samples[MAX_SAMPLES - 1].humidity = random_rand() % 100;
-        samples[MAX_SAMPLES - 1].dust_density = random_rand() % 500;
+        samples[MAX_SAMPLES - 1].timeid       = id_counter++;
+        samples[MAX_SAMPLES - 1].temperature  = last_temp;
+        samples[MAX_SAMPLES - 1].humidity     = last_hum;
+        samples[MAX_SAMPLES - 1].dust_density = last_dust;
     }
 }
 

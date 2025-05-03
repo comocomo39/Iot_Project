@@ -26,7 +26,7 @@ static int   shutdown_flag           = 0;
 
 int   high_temp_count = 0;
 int   low_temp_count  = 0;
-float temp_tresh      = 25;   /* soglia °C per attivare la ventilazione */
+float temp_tresh      = 31;   /* soglia °C per attivare la ventilazione */
 int   nRisktemp       = 0;
 int   shutdown        = 0;
 
@@ -60,7 +60,7 @@ control_ventilation(float predicted_temp, float threshold)
       leds_off(LEDS_RED | LEDS_YELLOW);
       leds_on(LEDS_GREEN);
     }
-  } else if(predicted_temp < threshold + 5) {
+  } else if(predicted_temp < threshold +2) {
     high_temp_count++;
     low_temp_count = 0;
 

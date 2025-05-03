@@ -33,12 +33,9 @@ static void predict_temperature(void){
   if(sample_count < MAX_SAMPLES) return;
 
   for(int i = 0; i < MAX_SAMPLES; i++){
-  temp_history[i] =
-      normalize(samples[i].temperature, TEMP_MIN, TEMP_MAX);
-  hum_history[i]  =
-      normalize(samples[i].humidity, HUM_MIN, HUM_MAX);
-  dust_history[i] =
-      normalize(samples[i].dust_density, DUST_MIN, DUST_MAX);
+  temp_history[i] = samples[i].temperature;
+  hum_history[i]  = samples[i].humidity;
+  dust_history[i] = samples[i].dust_density;
 }
 
   next_temperature = predict_next_temperature_from_values(
