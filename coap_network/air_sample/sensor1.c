@@ -34,7 +34,6 @@ AUTOSTART_PROCESSES(&air_quality_sensor_process);
 static struct etimer monitoring_timer;
 
 // Funzione per raccogliere un nuovo campione di dati
-/* sensor1.c – sostituisci la vecchia write_sample() :contentReference[oaicite:3]{index=3} */
 void write_sample(void) {
     uint16_t bucket = random_rand() % 100;   // 0-99
     if(bucket < 40) {                // SAFE
@@ -85,7 +84,7 @@ PROCESS_THREAD(air_quality_sensor_process, ev, data) {
 
     leds_single_on(LEDS_RED);
 
-    //                              PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
+    PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
 
     leds_single_off(LEDS_RED);
 
@@ -140,7 +139,7 @@ PROCESS_THREAD(air_quality_sensor_process, ev, data) {
         leds_single_off(LEDS_YELLOW);
         write_sample();
 
-        printf("✅ Attivazione server CoAP\n");
+        printf("Attivazione server CoAP\n");
         coap_activate_resource(&res_danger, "danger");
         coap_activate_resource(&res_dangerCount, "dangerCount");
         coap_activate_resource(&res_monitoring_air, "monitoring");

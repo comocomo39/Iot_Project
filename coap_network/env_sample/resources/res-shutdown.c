@@ -14,7 +14,7 @@ static void res_shutdown_get_handler(coap_message_t *request, coap_message_t *re
 /* Resource definition */
 RESOURCE(res_shutdown,
          "title=\"Shutdown Resource\";rt=\"shutdown\"",
-         res_shutdown_get_handler, // 👈 ora è dichiarata!
+         res_shutdown_get_handler, // ora è dichiarata
          NULL,
          NULL,
          NULL);

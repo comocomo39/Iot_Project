@@ -40,7 +40,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response,
 
 /* Notifica automatica */
 static void res_event_handler(void) {
-  printf("📡 Sending notification (monitoring)\n");
+  printf("Sending notification (monitoring)\n");
 
   /* Leggi i dati correnti */
   new_co = air_sample.co;

@@ -57,7 +57,6 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     printf("Livello di Pericolo Predetto: %i\n", val);
     
     // Formatta il valore come stringa
-    //int length = snprintf((char *)buffer, preferred_size, "%lu", (unsigned long) danger_counter);
     int length = snprintf((char *)buffer, preferred_size, "%d", val);
 
     if (length < 0) {

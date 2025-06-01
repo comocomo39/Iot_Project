@@ -102,7 +102,7 @@ void client_chunk_handler(coap_message_t *response) {
     char payload[len + 1];
     memcpy(payload, chunk, len);
     payload[len] = '\0';  
-    printf("📡 Risposta dal server: %s\n", payload);
+    printf("Risposta dal server: %s\n", payload);
 
     if (response->code == GOOD_ACK) {
         printf("Registrazione completata\n");
@@ -122,7 +122,7 @@ PROCESS_THREAD(temperature_sensor_process, ev, data) {
 
     leds_single_on(LEDS_RED);
 
-    //                                   PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
+    PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
 
     leds_single_off(LEDS_RED);
 

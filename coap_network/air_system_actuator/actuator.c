@@ -49,7 +49,7 @@ void response_handler_danger(coap_message_t *response) {
   char buf[len+1]; memcpy(buf, chunk, len); buf[len]='\0';
 
   int danger = atoi(buf);   // 0-1-2
-  printf("💨  Livello di pericolo: %d\n", danger);
+  printf("Livello di pericolo: %d\n", danger);
 
   /* esempio di reazione: */
   switch(danger) {
@@ -120,7 +120,7 @@ PROCESS_THREAD(coap_client_process, ev, data) {
 
   leds_single_on(LEDS_RED);
 
-  //                                       PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
+  PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
 
   leds_single_off(LEDS_RED);
 

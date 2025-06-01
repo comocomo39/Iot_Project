@@ -23,7 +23,7 @@ RESOURCE(res_threshold,
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response,
                             uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
-    printf("📡 Sending current danger threshold: %d\n", danger_threshold);
+    printf("Sending current danger threshold: %d\n", danger_threshold);
     int length = snprintf((char *)buffer, preferred_size, "{ \"danger_threshold\": %d }", danger_threshold);
     coap_set_header_content_format(response, APPLICATION_JSON);
     coap_set_payload(response, buffer, length);
@@ -41,9 +41,9 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response,
         int new_threshold = atoi(temp_buffer);
         if (new_threshold > 0) {
             danger_threshold = new_threshold;
-            printf("🔴 Updated danger threshold to: %d\n", danger_threshold);
+            printf("Updated danger threshold to: %d\n", danger_threshold);
         } else {
-            printf("❌ Invalid threshold value received!\n");
+            printf("Invalid threshold value received!\n");
         }
     }
 }

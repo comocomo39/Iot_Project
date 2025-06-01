@@ -87,7 +87,7 @@ void
 response_handler_temp(coap_message_t *response)
 {
   if(response == NULL) {
-    printf("❌ Nessuna risposta ricevuta dal server.\n");
+    printf("Nessuna risposta ricevuta dal server.\n");
     return;
   }
 
@@ -100,7 +100,7 @@ response_handler_temp(coap_message_t *response)
 
   predicted_temperature = atof(temp_str);
 
-  printf("📡 Temperatura Predetta: %.2f°C\n", predicted_temperature);
+  printf("Temperatura Predetta: %.2f°C\n", predicted_temperature);
   control_ventilation(predicted_temperature, temp_tresh);
 }
 /*---------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ void
 registration_handler(coap_message_t *response)
 {
   if(response == NULL) {
-    printf("❌ Nessuna risposta dal server di registrazione.\n");
+    printf("Nessuna risposta dal server di registrazione.\n");
     return;
   }
 
@@ -129,18 +129,18 @@ registration_handler(coap_message_t *response)
     if(endp && cJSON_IsString(endp)) {
       strncpy(sensor_addr_str, endp->valuestring, sizeof(sensor_addr_str) - 1);
       sensor_addr_str[sizeof(sensor_addr_str) - 1] = '\0';
-      printf("✅ Endpoint sensore salvato: %s\n", sensor_addr_str);
+      printf("Endpoint sensore salvato: %s\n", sensor_addr_str);
     } else {
-      printf("⚠️  Campo \"e\" non trovato nel JSON!\n");
+      printf("Campo \"e\" non trovato nel JSON!\n");
     }
     cJSON_Delete(root);
   }
 
   if(response->code == GOOD_ACK) {
     registered = 1;
-    printf("✅ Registrazione completata con successo.\n");
+    printf("Registrazione completata con successo.\n");
   } else {
-    printf("❌ Registrazione fallita (code %u).\n", response->code);
+    printf("Registrazione fallita (code %u).\n", response->code);
   }
 }
 /*---------------------------------------------------------------------------*/
@@ -151,10 +151,10 @@ handle_notification_temp(struct coap_observee_s *observee,
                          coap_notification_flag_t flag)
 {
   if(notification) {
-    printf("📡 Notifica ricevuta dalla predizione della temperatura.\n");
+    printf("Notifica ricevuta dalla predizione della temperatura.\n");
     response_handler_temp((coap_message_t *)notification);
   } else {
-    printf("⚠️  Nessuna notifica ricevuta.\n");
+    printf("Nessuna notifica ricevuta.\n");
   }
 }
 /*---------------------------------------------------------------------------*/
@@ -169,7 +169,7 @@ PROCESS_THREAD(coap_client_process, ev, data)
 
   leds_single_on(LEDS_RED);  /* LED rosso acceso per indicare avvio */
 
-  //                                          PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
+  PROCESS_WAIT_EVENT_UNTIL(ev == button_hal_press_event);
 
   leds_single_off(LEDS_RED); /* LED rosso spento dopo il pulsante */
 
@@ -203,7 +203,7 @@ PROCESS_THREAD(coap_client_process, ev, data)
              "coap://[%s]:5683", sensor_addr_str);
     coap_endpoint_parse(addr_temp, strlen(addr_temp), &server_ep_temp);
 
-    printf("📡 Invio richiesta di osservazione su %s\n", addr_temp);
+    printf("Invio richiesta di osservazione su %s\n", addr_temp);
 
     /* 2. Richiesta Observe su predict-temp */
     obs_temp = coap_obs_request_registration(&server_ep_temp,
@@ -219,7 +219,7 @@ PROCESS_THREAD(coap_client_process, ev, data)
     while(1) {
       PROCESS_WAIT_EVENT();
       if(temp_tresh ==-1 || shutdown) {
-        printf("❌ Spegnimento ventilazione...\n");
+        printf("Spegnimento ventilazione...\n");
         if(obs_temp) {
           coap_obs_remove_observee(obs_temp);
         }
@@ -228,7 +228,7 @@ PROCESS_THREAD(coap_client_process, ev, data)
       }
     }
   } else {
-    printf("❌ Registrazione fallita dopo %d tentativi.\n",
+    printf("Registrazione fallita dopo %d tentativi.\n",
            MAX_REGISTRATION_ENTRY);
   }
 

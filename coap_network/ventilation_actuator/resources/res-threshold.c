@@ -27,7 +27,7 @@ RESOURCE(res_tresh,
 
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
                             uint16_t preferred_size, int32_t *offset) {
-    printf("📡 GET ricevuta - restituzione della soglia attuale\n");
+    printf("GET ricevuta - restituzione della soglia attuale\n");
     
     // Creazione di un JSON con la soglia attuale
     cJSON *json = cJSON_CreateObject();
