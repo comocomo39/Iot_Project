@@ -49,11 +49,12 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 
     /* res-predict-temp.c */
     int length = snprintf((char *)buffer, preferred_size, "%.2f", next_temperature);
-
+    
+    coap_set_header_content_format(response, TEXT_PLAIN);
+    coap_set_header_etag(response, (uint8_t *)&length, 1);
     coap_set_payload(response, (uint8_t *)buffer, length);
 }
 
 static void res_event_handler(void) {
-    predict_temperature();
     coap_notify_observers(&res_predict_temp);
 }

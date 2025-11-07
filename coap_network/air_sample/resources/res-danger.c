@@ -71,6 +71,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     }
 
     coap_set_header_content_format(response, TEXT_PLAIN);
+    coap_set_header_etag(response, (uint8_t *)&length, 1);
     coap_set_payload(response, buffer, length);
 }
 
@@ -87,6 +88,9 @@ static void res_get_handler_counter(coap_message_t *request,
 {
   int length = snprintf((char *)buffer, preferred_size,
                         "%lu", (unsigned long) danger_counter);
+                        
+  coap_set_header_content_format(response, TEXT_PLAIN);
+  coap_set_header_etag(response, (uint8_t *)&length, 1);
   coap_set_payload(response, buffer, length);
 }
 

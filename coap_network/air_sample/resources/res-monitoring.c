@@ -14,7 +14,7 @@ static float new_co = 0.0;
 static float new_air_quality = 0.0;
 static float new_tvoc = 0.0;
 static int sample_id = 0;
-static char last_payload[128]; // buffer da riusare per GET e notify
+//static char last_payload[128]; // buffer da riusare per GET e notify
 
 extern AirSample air_sample;
 
@@ -34,12 +34,6 @@ EVENT_RESOURCE(res_monitoring_air,
 /* Handler GET (usa ultimo JSON salvato) */
 static void res_get_handler(coap_message_t *request, coap_message_t *response,
                              uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
-  coap_set_header_content_format(response, APPLICATION_JSON);
-  coap_set_payload(response, last_payload, strlen(last_payload));
-}
-
-/* Notifica automatica */
-static void res_event_handler(void) {
   printf("Sending notification (monitoring)\n");
 
   /* Leggi i dati correnti */
@@ -61,17 +55,29 @@ static void res_event_handler(void) {
   cJSON_AddItemToArray(ss_array, cJSON_CreateNumber(new_pred));
   cJSON_AddItemToObject(root, "ss", ss_array);
   cJSON_AddNumberToObject(root, "t", sample_id++);
+  char *json = cJSON_Print(root);
 
-  char *json_payload = cJSON_PrintUnformatted(root);
-  if (json_payload != NULL) {
-    strncpy(last_payload, json_payload, sizeof(last_payload) - 1);
-    last_payload[sizeof(last_payload) - 1] = '\0';
-    free(json_payload);
-  } else {
-    snprintf(last_payload, sizeof(last_payload), "{\"ss\":[0,0,0,0],\"id\":%d}", sample_id++);
+  if (json == NULL) {
+      coap_set_status_code(response, BAD_REQUEST_4_00);
+      return;
   }
 
-  cJSON_Delete(root);
+  int length = snprintf((char *)buffer, preferred_size, "%s", json);
+
+
+  if (length < 0 || length >= preferred_size) {
+      coap_set_status_code(response, BAD_REQUEST_4_00);
+      return;
+  }
+                              
+  coap_set_header_etag(response, (uint8_t *)&length, 1);
+  coap_set_payload(response, buffer, length);
+
+}
+
+/* Notifica automatica */
+static void res_event_handler(void) {
+
 
   coap_notify_observers(&res_monitoring_air);
 }

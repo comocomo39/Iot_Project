@@ -53,9 +53,9 @@ void response_handler_danger(coap_message_t *response) {
 
   /* esempio di reazione: */
   switch(danger) {
-    case 0: leds_single_off(LEDS_RED); leds_single_on(LEDS_GREEN);  break;
-    case 1: leds_single_off(LEDS_GREEN); leds_single_on(LEDS_RED); break;
-    case 2: leds_single_off(LEDS_GREEN); leds_single_on(LEDS_RED);  break;
+    case 0: leds_single_off(LEDS_YELLOW); leds_single_off(LEDS_RED); leds_single_on(LEDS_GREEN);  break;
+    case 1: leds_single_off(LEDS_GREEN); leds_single_off(LEDS_RED); leds_single_on(LEDS_YELLOW); break;
+    case 2: leds_single_off(LEDS_GREEN); leds_single_off(LEDS_YELLOW); leds_single_on(LEDS_RED);  break;
   }
 }
 
@@ -93,21 +93,15 @@ void registration_handler(coap_message_t *response) {
     return;
   }
 
-  // Supporta chiavi: "l", "t", "e"
-  cJSON *ipv6_danger_item = cJSON_GetObjectItemCaseSensitive(json, "l");
-  if (!cJSON_IsString(ipv6_danger_item))
-    ipv6_danger_item = cJSON_GetObjectItemCaseSensitive(json, "t");
-  if (!cJSON_IsString(ipv6_danger_item))
-    ipv6_danger_item = cJSON_GetObjectItemCaseSensitive(json, "e");
-
-  if (cJSON_IsString(ipv6_danger_item)) {
-    snprintf(ipv6_danger, sizeof(ipv6_danger), "%s", ipv6_danger_item->valuestring);
-    printf("Registered IPv6 danger sensor: %s\n", ipv6_danger);
+  // 🔹 Cerca solo il campo "e" (endpoint del sensore)
+  cJSON *ipv6_item = cJSON_GetObjectItemCaseSensitive(json, "e");
+  if (cJSON_IsString(ipv6_item)) {
+    snprintf(ipv6_danger, sizeof(ipv6_danger), "%s", ipv6_item->valuestring);
+    printf("📡 IPv6 ricevuto dal server: %s\n", ipv6_danger);
     registered = 1;
   } else {
-    printf("Invalid JSON format or missing keys (expected: l, t, or e)\n");
+    printf("⚠️ Nessun campo \"e\" trovato nel JSON!\n");
   }
-
   cJSON_Delete(json);
 }
 
@@ -169,6 +163,7 @@ PROCESS_THREAD(coap_client_process, ev, data) {
   } else {
     printf("Failed to register after %d attempts\n", REGISTRATION_ATTEMPTS);
   }
+
 
   PROCESS_END();
 }

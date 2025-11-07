@@ -112,6 +112,7 @@ PROCESS_THREAD(air_quality_sensor_process, ev, data) {
         cJSON_AddItemToObject(root, "ss", features);
         cJSON_AddNumberToObject(root, "t", TIME_SAMPLE);
 
+
         char *payload = cJSON_PrintUnformatted(root);
         if (payload == NULL) {
             printf("Errore nella stampa del JSON\n");

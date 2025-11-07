@@ -58,23 +58,39 @@ class CoapResourceRegistrationActuator extends CoapResource {
                 db.insertIPv6Address(ipAddress, "actuator", actuator);
                 System.out.println("Actuator IP REGISTERED!");
 
-                // Costruisci il JSON di risposta con gli IP dei sensori
+                // Costruisci il JSON di risposta con l'indirizzo del sensore associato
                 List<PairNameIp> sensorIPs = db.getIPs("sensor");
                 JSONObject responseJson = new JSONObject();
 
-                for (PairNameIp ip : sensorIPs) {
-                    System.out.println("Actuator mapping: " + ip.name + " ip: " + ip.ip);
-                    if (ip.name.toLowerCase().contains("air")) {
-                        responseJson.put("l", ip.ip); // 'l' -> air quality sensor
-                    } else if (ip.name.toLowerCase().contains("temp")) {
-                        responseJson.put("t", ip.ip); // 't' -> temperature sensor
-                    } else {
-                        responseJson.put("e", ip.ip); // 'e' -> other sensors
+                String ipv6ToSend = null;
+
+                // Decidi quale sensore associare in base al nome dell'attuatore
+                if (actuator.toLowerCase().contains("actuator")) {
+                    // cerca "air_sample"
+                    for (PairNameIp ip : sensorIPs) {
+                        if (ip.name.toLowerCase().contains("air_sample")) {
+                            ipv6ToSend = ip.ip;
+                            break;
+                        }
+                    }
+                } else if (actuator.toLowerCase().contains("ventilation")) {
+                    // cerca "env_sample"
+                    for (PairNameIp ip : sensorIPs) {
+                        if (ip.name.toLowerCase().contains("env_sample")) {
+                            ipv6ToSend = ip.ip;
+                            break;
+                        }
                     }
                 }
 
-                System.out.println("Sensor IPs for actuator: " + responseJson.toJSONString());
+                if (ipv6ToSend != null) {
+                    responseJson.put("e", ipv6ToSend);
+                    System.out.println("✔ IP associato all’attuatore " + actuator + ": " + ipv6ToSend);
+                } else {
+                    System.out.println("⚠ Nessun sensore corrispondente trovato per " + actuator);
+                }
 
+                // Invia risposta JSON all’attuatore
                 Response response = new Response(CoAP.ResponseCode.CREATED);
                 response.setPayload(responseJson.toJSONString());
                 exchange.respond(response);

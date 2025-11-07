@@ -107,7 +107,8 @@ build/nrf52840/dongle/obj/ventilation.o: ventilation.c \
  ../../../../arch/cpu/nrf52840/lib/nrf52-sdk/modules/nrfx/drivers/include/nrfx_gpiote.h \
  ../../../../arch/cpu/nrf52840/lib/nrf52-sdk/modules/nrfx/hal/nrf_gpiote.h \
  ../../../../arch/cpu/nrf52840/lib/nrf52-sdk/modules/nrfx/hal/nrf_gpio.h \
- ../cJSON-master/cJSON.h global_variable/global_variables.h
+ ../cJSON-master/cJSON.h global_variable/global_variables.h \
+ ../../../../os/dev/button-hal.h ../../../../os/sys/ctimer.h
 
 ../../../../os/net/app-layer/coap/module-macros.h:
 
@@ -378,3 +379,7 @@ project-conf.h:
 ../cJSON-master/cJSON.h:
 
 global_variable/global_variables.h:
+
+../../../../os/dev/button-hal.h:
+
+../../../../os/sys/ctimer.h:
