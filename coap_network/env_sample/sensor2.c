@@ -150,7 +150,6 @@ PROCESS_THREAD(temperature_sensor_process, ev, data) {
         cJSON_AddItemToObject(root, "ss", features);
         cJSON_AddNumberToObject(root, "t", TIME_SAMPLE);
 
-
         char *payload = cJSON_PrintUnformatted(root);
         if (payload == NULL) {
             LOG_ERR("Errore nella stampa del JSON\n");
@@ -181,8 +180,8 @@ PROCESS_THREAD(temperature_sensor_process, ev, data) {
         coap_activate_resource(&res_shutdown, "shutdown");
 
         // Impostiamo i timer per il campionamento e la predizione
-        etimer_set(&prediction_timer, CLOCK_SECOND * TIME_SAMPLE);
-        etimer_set(&monitoring_timer, CLOCK_SECOND * TIME_SAMPLE);
+        etimer_set(&prediction_timer, CLOCK_SECOND * (TIME_SAMPLE));
+        etimer_set(&monitoring_timer, CLOCK_SECOND * (TIME_SAMPLE));
 
         while (1) {
             PROCESS_YIELD();
@@ -200,7 +199,9 @@ PROCESS_THREAD(temperature_sensor_process, ev, data) {
                 etimer_reset(&monitoring_timer);
             }
             if (etimer_expired(&prediction_timer)) {
+                              // <--- aggiungi qui
                 res_predict_temp.trigger();
+                
                 etimer_reset(&prediction_timer);
             }
         }

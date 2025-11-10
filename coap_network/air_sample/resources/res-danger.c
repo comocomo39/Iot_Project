@@ -16,7 +16,7 @@ static void res_get_handler_counter(coap_message_t *request, coap_message_t *res
 static uint32_t danger_counter = 0; // Contatore per il numero di volte che il livello di pericolo è stato predetto
 
 EVENT_RESOURCE(res_danger,
-         "title=\"Air Quality Danger Level\"; rt=\"Text\"",
+         "title=\"Air Quality Danger Level\"; rt=\"Text\";obs",
          res_get_handler,
          NULL,
          NULL,

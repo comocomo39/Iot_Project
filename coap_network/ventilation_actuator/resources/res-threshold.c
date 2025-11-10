@@ -12,11 +12,13 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
                              uint16_t preferred_size, int32_t *offset);
 
-// Variabili globali
-extern float temp_tresh;  // Soglia della temperatura
+// --- MODIFICA: Variabili globali intere (x100) ---
+// Deve corrispondere a ventilation.c
+extern int temp_tresh_x100;  // (31.50 * 100)
 extern int nRisktemp;
 extern int high_temp_count;
 extern int low_temp_count;
+// --- FINE MODIFICA ---
 
 RESOURCE(res_tresh,
          "title=\"Set Temperature Threshold\";rt=\"Text\"",
@@ -29,29 +31,34 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
                             uint16_t preferred_size, int32_t *offset) {
     printf("GET ricevuta - restituzione della soglia attuale\n");
     
-    // Creazione di un JSON con la soglia attuale
     cJSON *json = cJSON_CreateObject();
-    cJSON_AddNumberToObject(json, "temperature_threshold", temp_tresh);
+    // --- MODIFICA: Invia soglia intera ---
+    cJSON_AddNumberToObject(json, "temperature_threshold_x100", temp_tresh_x100);
     cJSON_AddNumberToObject(json, "risk_temperature", nRisktemp);
     cJSON_AddNumberToObject(json, "high_temp_count", high_temp_count);
     cJSON_AddNumberToObject(json, "low_temp_count", low_temp_count);
+    // --- FINE MODIFICA ---
 
-    // Conversione in stringa JSON
     char *json_str = cJSON_Print(json);
+    
+    if (json_str == NULL) {
+        coap_set_status_code(response, INTERNAL_SERVER_ERROR_5_00);
+        cJSON_Delete(json);
+        return;
+    }
 
-    // Copia nel buffer della risposta
     int length = strlen(json_str);
     if (length > preferred_size) {
         length = preferred_size;
     }
     memcpy(buffer, json_str, length);
 
-    // Imposta i campi della risposta CoAP
     coap_set_header_content_format(response, APPLICATION_JSON);
     coap_set_header_etag(response, (uint8_t *)&length, 1);
     coap_set_payload(response, buffer, length);
     
     cJSON_Delete(json);
+    free(json_str); // Correzione memory leak
 }
 
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer,
@@ -64,25 +71,28 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
     const uint8_t *payload = NULL;
     int payload_len = coap_get_payload(request, &payload);
 
-    if (payload_len) {
+    if (payload_len > 0) {
         char temp_str[16];
-        if (payload_len >= sizeof(temp_str)) {
+        if (payload_len >= (int)sizeof(temp_str)) {
             coap_set_status_code(response, BAD_REQUEST_4_00);
             return;
         }
 
-        // Copia il valore della nuova soglia
         memcpy(temp_str, payload, payload_len);
         temp_str[payload_len] = '\0';
 
-        // Converte il valore e aggiorna la soglia
-        temp_tresh = atof(temp_str);
-        printf("Nuova soglia di temperatura impostata: %.2f°C\n", temp_tresh);
-
-        // Costruisce la risposta
-        int length = snprintf((char *)buffer, preferred_size, "Threshold set to: %.2f", temp_tresh);
+        // --- MODIFICA: Parsing (atoi) ---
+        // Il payload POST ora deve essere un intero (es. "3200" per 32.0°C)
+        temp_tresh_x100 = atoi(temp_str);
+        printf("Nuova soglia di temperatura impostata: %d (C*100)\n", temp_tresh_x100);
+        
+        int length = snprintf((char *)buffer, preferred_size, "Threshold set to: %d", temp_tresh_x100);
+        // --- FINE MODIFICA ---
+        
         coap_set_header_content_format(response, TEXT_PLAIN);
         coap_set_header_etag(response, (uint8_t *)&length, 1);
         coap_set_payload(response, buffer, length);
+    } else {
+        coap_set_status_code(response, BAD_REQUEST_4_00);
     }
 }

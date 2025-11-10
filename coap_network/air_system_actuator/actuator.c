@@ -53,9 +53,9 @@ void response_handler_danger(coap_message_t *response) {
 
   /* esempio di reazione: */
   switch(danger) {
-    case 0: leds_single_off(LEDS_YELLOW); leds_single_off(LEDS_RED); leds_single_on(LEDS_GREEN);  break;
-    case 1: leds_single_off(LEDS_GREEN); leds_single_off(LEDS_RED); leds_single_on(LEDS_YELLOW); break;
-    case 2: leds_single_off(LEDS_GREEN); leds_single_off(LEDS_YELLOW); leds_single_on(LEDS_RED);  break;
+    case 0: leds_single_off(LEDS_YELLOW); leds_off(LEDS_RED); leds_single_on(LEDS_RED);  break;
+    case 1: leds_single_off(LEDS_RED); leds_off(LEDS_RED); leds_single_on(LEDS_YELLOW); break;
+    case 2: leds_single_off(LEDS_RED); leds_single_off(LEDS_YELLOW); leds_on(LEDS_RED);  break;
   }
 }
 
